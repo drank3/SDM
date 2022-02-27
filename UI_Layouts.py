@@ -4,8 +4,6 @@ logic, default frame ratios, window initialization, and eventually layout design
 here.
 
 
-This class is **inherits** (in a stupid, backwards kind of way) from the better_Builder file. See there where it
-is called
 """
 
 from PySide2 import QtCore, QtGui, QtWidgets
@@ -48,14 +46,11 @@ class Layouts:
         self.parent.parameter_viewer_widget_contents.setObjectName("parameter_viewer_widget_contents")
         self.parent.parameter_viewer.setWidget(self.parent.parameter_viewer_widget_contents)
 
-        self.parent.attribute_viewer = QtWidgets.QScrollArea(self.parent.centralwidget)
+        self.parent.attribute_viewer = QtWidgets.QFrame(self.parent.centralwidget)
+        self.parent.attribute_viewer.layout = QtWidgets.QGridLayout(self.parent.attribute_viewer)
         self.parent.attribute_viewer.setGeometry(QtCore.QRect((1-attributes_default_width)*self.MainWindow.width(), 0, attributes_default_width*self.MainWindow.width(), (attribute_default_height)*self.MainWindow.height()))
-        self.parent.attribute_viewer.setWidgetResizable(True)
         self.parent.attribute_viewer.setObjectName("attribute_viewer")
-        self.parent.attribute_viewer_widget_contents = QtWidgets.QWidget()
-        self.parent.attribute_viewer_widget_contents.setGeometry(QtCore.QRect((1-attributes_default_width)*self.MainWindow.width(), 0, attributes_default_width*self.MainWindow.width(), (attribute_default_height)*self.MainWindow.height()))
-        self.parent.attribute_viewer_widget_contents.setObjectName("attribute_viewer_widget_contents")
-        self.parent.attribute_viewer.setWidget(self.parent.attribute_viewer_widget_contents)
+
 
 
         self.parent.batch_viewer = QtWidgets.QScrollArea(self.parent.centralwidget)
@@ -127,7 +122,7 @@ class Layouts:
             attribute_viewer_height = (attribute_default_height)*mw_height
             self.parent.attribute_viewer.move(attribute_viewer_x, attribute_viewer_y)
             self.parent.attribute_viewer.resize(attribute_viewer_width, attribute_viewer_height)
-            self.parent.attribute_viewer_widget_contents.resize(attribute_viewer_width, attribute_viewer_height)
+            
 
             batch_viewer_x = 1
             batch_viewer_y = 0

@@ -1,2 +1,2 @@
-*.pyc
-*.csv
+/__pycache__
+/System_Settings

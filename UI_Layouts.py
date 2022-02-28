@@ -53,14 +53,10 @@ class Layouts:
 
 
 
-        self.parent.batch_viewer = QtWidgets.QScrollArea(self.parent.centralwidget)
+        self.parent.batch_viewer = QtWidgets.QFrame(self.parent.centralwidget)
         self.parent.batch_viewer.setGeometry(QtCore.QRect(0, 0, batch_viewer_default_width*self.MainWindow.width(), self.MainWindow.height()))
-        self.parent.batch_viewer.setWidgetResizable(True)
         self.parent.batch_viewer.setObjectName("batch_viewer")
-        self.parent.batch_viewer_widget_contents = QtWidgets.QWidget()
-        self.parent.batch_viewer_widget_contents.setGeometry(QtCore.QRect(0, 0, batch_viewer_default_width*self.MainWindow.width(), self.MainWindow.height()-40))
-        self.parent.batch_viewer_widget_contents.setObjectName("batch_viewer_widget_contents")
-        self.parent.batch_viewer.setWidget(self.parent.batch_viewer_widget_contents)
+        self.parent.batch_viewer.layout = QtWidgets.QGridLayout(self.parent.batch_viewer)
 
 
         self.parent.structure_viewer = QtWidgets.QScrollArea(self.parent.centralwidget)
@@ -122,14 +118,13 @@ class Layouts:
             attribute_viewer_height = (attribute_default_height)*mw_height
             self.parent.attribute_viewer.move(attribute_viewer_x, attribute_viewer_y)
             self.parent.attribute_viewer.resize(attribute_viewer_width, attribute_viewer_height)
-            
+
 
             batch_viewer_x = 1
             batch_viewer_y = 0
             batch_viewer_width = batch_viewer_default_width*mw_width
             batch_viewer_height = mw_height
             self.parent.batch_viewer.resize(batch_viewer_width, batch_viewer_height)
-            self.parent.batch_viewer_widget_contents.resize(batch_viewer_width, batch_viewer_height)
             self.parent.batch_viewer.move(batch_viewer_x, batch_viewer_y)
 
             structure_viewer_x = batch_viewer_width

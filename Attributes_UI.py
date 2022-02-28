@@ -16,9 +16,20 @@ class Attributes_Window(object):
 
         self.Top_Buttons()
 
-        self.Create_Frame(-1, "Attr", self.attribute_viewer)
+        self.Create_Tree_Viewer()
 
+        self.attribute_viewer.layout.setRowStretch(0, 1)
+        self.attribute_viewer.layout.setRowStretch(1, 20)
+        self.attribute_viewer.layout.setRowStretch(2, 3)
+        self.attribute_viewer.layout.setRowStretch(3, 150)
 
+        self.attribute_viewer.layout.setColumnStretch(0, 1)
+        self.attribute_viewer.layout.setColumnStretch(1, 25)
+        self.attribute_viewer.layout.setColumnStretch(2, 25)
+        self.attribute_viewer.layout.setColumnStretch(3, 1)
+
+        self.attribute_viewer.layout.setHorizontalSpacing(1)
+        self.attribute_viewer.layout.setContentsMargins(13, self.header.height(), 13, 13)
 
     def Set_Header(self):
 
@@ -62,44 +73,16 @@ class Attributes_Window(object):
 
 
 
-    """
-    Creates a grid, and returns the object of that grid
-    """
 
-    def Create_Frame(self, num, name, location):
-        grid_h_offset = 25
-        grid_v_offset = 90
-        grid_width = self.attribute_viewer.width()-2*grid_h_offset
-        grid_height = self.attribute_viewer.height() - 50 - grid_v_offset
+    def Create_Tree_Viewer(self):
 
-        #Initializes the first frame with an Add button
-        self.frame = QtWidgets.QFrame(location)
-
-
-        self.frame.setGeometry(QtCore.QRect(grid_h_offset, grid_v_offset, grid_width, grid_height))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
-        self.frame.setSizePolicy(sizePolicy)
-        self.frame.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
-        self.frame.setFrameShape(QtWidgets.QFrame.Panel)
-        self.frame.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.frame.setLineWidth(0)
-        self.frame.setObjectName("frame_"+str(num))
-        #plus = self.Create_Plus(10, 30, name, self.frame)
-        self.frame.setVisible(True)
-        self.Create_Tree_Viewer(self.frame)
-        self.viewer.setVisible(True)
-        return self.frame
-
-
-
-    def Create_Tree_Viewer(self, parent):
-
-        self.viewer = QtWidgets.QTreeWidget(parent)
+        self.viewer = QtWidgets.QTreeWidget()
+        self.attribute_viewer.layout.addWidget(self.viewer, 3, 1, 1, 2)
+        #sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        #sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
+        #self.viewer.setSizePolicy(sizePolicy)
         self.viewer.setObjectName("Attr@Viewer")
-        self.viewer.setGeometry(QtCore.QRect(0, 0, self.frame.width(), self.frame.height()))
+        self.viewer.setGeometry(QtCore.QRect(0, 0, 300, 300))
         self.viewer.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.viewer.setFrameShape(QtWidgets.QFrame.Panel)
         self.viewer.setLineWidth(1)
@@ -135,7 +118,8 @@ class Attributes_Window(object):
         font = QtGui.QFont()
         font.setPointSize(15)
 
-        self.Add_Variable = QtWidgets.QLabel(self.attribute_viewer)
+        self.Add_Variable = QtWidgets.QLabel()
+        self.attribute_viewer.layout.addWidget(self.Add_Variable, 1, 0, 1, 2)
         self.Add_Variable.setObjectName("Add@Attr_Variable")
         self.Add_Variable.setGeometry(QtCore.QRect(button_h_offset, 45, button_width, button_height))
         self.Add_Variable.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)
@@ -145,7 +129,8 @@ class Attributes_Window(object):
         self.Add_Variable.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
 
 
-        self.Add_Group = QtWidgets.QLabel(self.attribute_viewer)
+        self.Add_Group = QtWidgets.QLabel()
+        self.attribute_viewer.layout.addWidget(self.Add_Group, 1, 2, 1, 2)
         self.Add_Group.setObjectName("Add@Attr_Group")
         self.Add_Group.setGeometry(QtCore.QRect(button_h_offset + button_width, 45, button_width, button_height))
         self.Add_Group.setFrameStyle(QtWidgets.QFrame.Panel | QtWidgets.QFrame.Raised)

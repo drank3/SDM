@@ -29,7 +29,7 @@ class Attributes_Main_Logic(object):
                 try:
                     self.Clear_Attr_Window()
                 except:
-                    ui.AUI.Create_Frame(-1, "Attr", ui.AUI.attribute_viewer)
+                    ui.AUI.Create_Tree_Viewer()
 
 
 
@@ -54,13 +54,12 @@ class Attributes_Main_Logic(object):
 
         except Exception as e:
             print(traceback.format_exc())
-            if not ui.AUI.frame:
+            if not ui.AUI.viewer:
                 #There is only one grid for the attribute window, and there will never be any more, so says I
-                ui.AUI.Create_Frame(-1, "Attr", ui.attribute_viewer)
+                ui.AUI.Create_Tree_Viewer()
 
-                #Keeps going invisible for some reason, had to reset Visibility to True
-                ui.AUI.frame.setVisible(True)
-            elif ui.AUI.frame:
+
+            elif ui.AUI.viewer:
                 self.Clear_Attr_Window()
 
 

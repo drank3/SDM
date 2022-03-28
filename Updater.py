@@ -5,6 +5,7 @@ from datetime import datetime
 import pandas as pd
 from PySide2.QtCore import Qt
 import os
+import time
 import sys
 
 
@@ -34,25 +35,37 @@ class Update_Manager():
 
 
     def Create_Server_Connection(self):
+        start_time = time.perf_counter()
+
         connection = None
-        try:
-            connection = mysql.connector.connect(
-                host='170.187.158.29',
-                user='remote_user',
-                passwd='eml-lab293461',
 
-                database = 'Updates'
-            )
-            self.connection_status = True
 
-            print("MySQL Database connection successful")
-        except Error as err:
-            print(f"Error: '{err}'")
-            self.connection_status = False
+        #This part will attempt to establish a connection until 10 s is reached,
+        # at which point it will give up, and raise an error
+        time_elapsed = time.perf_counter()-start_time
+        timeout_time = 5    #The amount of seconds required for a timeout
 
-        self.connection = connection
+        while time_elapsed < timeout_time:
+            try:
+                connection = mysql.connector.connect(
+                    host='170.187.158.29',
+                    user='remote_user',
+                    passwd='eml-lab293461',
+                    database = 'EML'
+                )
+                self.connection_status = True
+                self.connection = connection
+                print("MySQL Database connection successful")
+                return self.connection_status
 
-        return connection
+            except Exception as e:
+                print(f"Server error: {e}")
+                self.connection_status = False
+
+            time_elapsed = time.perf_counter()-start_time
+
+        if time_elapsed >= timeout_time:
+            print("Server connection timed out")
 
 
     def Check_For_Updates(self):
@@ -101,34 +114,36 @@ class Update_Manager():
     # and enacts them
     def Run_Update_Actions(self, action_ids):
         try:
-            for id in action_ids:
-                cursor = self.connection.cursor()
-                query = f"SELECT Version, Action, File, Old_Path, New_Path  FROM Update_Actions WHERE ID = {id}"
-                cursor.execute(query)
+            if self.connection_status == True:
+                for id in action_ids:
+                    cursor = self.connection.cursor()
+                    query = f"SELECT Version, Action, File, Old_Path, New_Path  FROM Update_Actions WHERE ID = {id}"
+                    cursor.execute(query)
 
-                [update_version, update_action, update_file, old_path, new_path] = cursor.fetchall()[0]
+                    [update_version, update_action, update_file, old_path, new_path] = cursor.fetchall()[0]
 
-                update_file = update_file.decode('utf-8')
-                update_file = "".join([chr(int(binary, 2)) for binary in update_file.split(" ")])
+                    update_file = update_file.decode('utf-8')
+                    update_file = "".join([chr(int(binary, 2)) for binary in update_file.split(" ")])
 
 
-                if update_action == "Replace":
-                    os.remove(self.dir_path + old_path)
-                    with open(self.dir_path + new_path, 'w') as file:
-                        file.write(update_file)
-                if update_action == "Remove":
-                    os.remove(self.dir_path + old_path)
-                if update_action == "Rename":
-                    os.rename(self.dir_path + old_path, self.dir_path + new_path)
-                if update_action == "Create":
-                    with open(self.dir_path + new_path, 'w') as file:
+                    if update_action == "Replace":
+                        os.remove(self.dir_path + old_path)
+                        with open(self.dir_path + new_path, 'w') as file:
+                            file.write(update_file)
+                    if update_action == "Remove":
+                        os.remove(self.dir_path + old_path)
+                    if update_action == "Rename":
+                        os.rename(self.dir_path + old_path, self.dir_path + new_path)
+                    if update_action == "Create":
+                        with open(self.dir_path + new_path, 'w') as file:
 
-                        file.write(update_file)
+                            file.write(update_file)
 
-            #Setting the current version of the app to the version of the last update action after successful completion
-            self.version = update_version
-            self.Set_New_Version(self.version)
-
+                #Setting the current version of the app to the version of the last update action after successful completion
+                self.version = update_version
+                self.Set_New_Version(self.version)
+            else:
+                raise TypeError("No server connection established")
 
         except Exception as e:
             print(f"Update actions failed with error {e}")
@@ -142,9 +157,12 @@ class Update_Manager():
         cursor.execute(versions_query)
 
         try:
-            all_updates = cursor.fetchall()
-            self.latest_version = all_updates[-1][1]
-            return all_updates
+            if self.connection_status == True:
+                all_updates = cursor.fetchall()
+                self.latest_version = all_updates[-1][1]
+                return all_updates
+            else:
+                raise TypeError("No server connection established")
 
         except Exception as e:
             self.latest_version = self.version

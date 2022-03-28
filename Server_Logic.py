@@ -4,6 +4,7 @@ from mysql.connector import Error
 from datetime import datetime
 import pandas as pd
 from PySide2.QtCore import Qt
+import time
 
 ui = [None]
 bl = [None]
@@ -40,25 +41,45 @@ class Server_Logic():
 
 
     def Create_Server_Connection(self):
-        connection = None
-        try:
-            connection = mysql.connector.connect(
-                host='170.187.158.29',
-                user='remote_user',
-                passwd='eml-lab293461',
-                database = 'EML'
-            )
-            self.connection_status = True
+        start_time = time.perf_counter()
 
-            print("MySQL Database connection successful")
-        except Error as err:
-            print(f"Error: '{err}'")
-            self.connection_status = False
+        connection = None
+
+        #This part will attempt to establish a connection until 10 s is reached,
+        # at which point it will give up, and raise an error
+        time_elapsed = time.perf_counter()-start_time
+        timeout_time = 5    #The amount of seconds required for a timeout
+
+        while time_elapsed < timeout_time:
+            try:
+                connection = mysql.connector.connect(
+                    host='170.187.158.29',
+                    user='remote_user',
+                    passwd='eml-lab293461',
+                    database = 'EML'
+                )
+                self.connection_status = True
+                self.connection = connection
+                print("MySQL Database connection successful")
+                return self.connection_status
+
+            except Exception as e:
+                print(f"Server error: {e}")
+                self.connection_status = False
+
+            time_elapsed = time.perf_counter()-start_time
+
+        if time_elapsed >= timeout_time:
+            print("Server connection timed out")
+
+
+
+
 
         self.connection = connection
 
 
-        return connection
+
 
     def Insert_New_Device(self, device_name, batch_name, data):
         if self.connection_status == True:
@@ -94,7 +115,7 @@ class Server_Logic():
                 print(f"Database sync failed with error: {e}")
                 return False
             else:
-                print("No connection was established. Try settign that u and trying again")
+                print("No connection was established. Try setting that up and trying again")
 
 if __name__ == "__main__":
     sl = Server_Logic("ssssdfsdfsdfdsf", "sdfsdfad")

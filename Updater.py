@@ -51,7 +51,7 @@ class Update_Manager():
                     host='170.187.158.29',
                     user='remote_user',
                     passwd='eml-lab293461',
-                    database = 'EML'
+                    database = 'Updates'
                 )
                 self.connection_status = True
                 self.connection = connection

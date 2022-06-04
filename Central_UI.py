@@ -12,7 +12,9 @@ import ctypes
 import os
 import json
 
-
+#The default portion of the screen taken up by the windows
+init_width = .6
+init_height = .7
 
 
 
@@ -33,6 +35,7 @@ class Central_UI(object):
 
 
         self.MainWindow = QtWidgets.QMainWindow()
+        self.screen = QtGui.QGuiApplication.primaryScreen()
 
         self.setupUi()
         self.main_menus = Main_Menus(self)
@@ -50,6 +53,9 @@ class Central_UI(object):
 
 
 
+
+
+
         with open(os.path.dirname(__file__) + r'/System Settings/Settings.txt', 'r') as file:
             system_settings = json.load(file)
             self.user = system_settings['Username']
@@ -60,9 +66,10 @@ class Central_UI(object):
 
         #Setting the base window up, most of this is uninteresting/redundant
         self.MainWindow.setObjectName("self.MainWindow")
-        self.MainWindow.resize(1100, 700)
-        #self.MainWindow.setFixedSize(1100, 700)
-        self.MainWindow.resize(1100, 700)
+
+        available_width = self.screen.availableGeometry().width()
+        available_height = self.screen.availableGeometry().height()
+        self.MainWindow.resize(available_width*init_width, available_height*init_height)
         self.MainWindow.move(400, 100)
 
 

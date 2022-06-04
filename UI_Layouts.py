@@ -25,6 +25,16 @@ class Layouts:
     def __init__(self, parent):
         self.parent = parent
         self.MainWindow = parent.MainWindow
+        self.parent.central_layout = QtWidgets.QGridLayout(self.parent.centralwidget)
+        self.parent.centralwidget.setLayout(self.parent.central_layout)
+
+        self.parent.central_layout.setColumnStretch(0, 2)
+        self.parent.central_layout.setColumnStretch(1, 4)
+        self.parent.central_layout.setColumnStretch(2, 3)
+
+        self.parent.central_layout.setRowStretch(0, 13)
+        self.parent.central_layout.setRowStretch(1, 7)
+
         self.Default_Window_Initialization()
         self.Resizing(self.MainWindow)
         self.MainWindow.resizeEvent = self.Resizing
@@ -37,8 +47,8 @@ class Layouts:
 
 
         self.parent.parameter_viewer = QtWidgets.QScrollArea(self.parent.centralwidget)
-        self.parent.parameter_viewer.setGeometry(QtCore.QRect((batch_viewer_default_width)*self.MainWindow.width()+1, attribute_default_height*self.MainWindow.height(), (1-batch_viewer_default_width)*self.MainWindow.width(), (1-attribute_default_height)*self.MainWindow.height()))
-        self.parent.parameter_viewer.setSizePolicy(sizePolicy)
+        self.parent.central_layout.addWidget(self.parent.parameter_viewer, 1, 1, 1, 2)
+
         self.parent.parameter_viewer.setWidgetResizable(True)
         self.parent.parameter_viewer.setObjectName("parameter_viewer")
         self.parent.parameter_viewer_widget_contents = QtWidgets.QWidget()
@@ -47,6 +57,7 @@ class Layouts:
         self.parent.parameter_viewer.setWidget(self.parent.parameter_viewer_widget_contents)
 
         self.parent.attribute_viewer = QtWidgets.QFrame(self.parent.centralwidget)
+        self.parent.central_layout.addWidget(self.parent.attribute_viewer, 0, 2, 1, 1)
         self.parent.attribute_viewer.layout = QtWidgets.QGridLayout(self.parent.attribute_viewer)
         self.parent.attribute_viewer.setGeometry(QtCore.QRect((1-attributes_default_width)*self.MainWindow.width(), 0, attributes_default_width*self.MainWindow.width(), (attribute_default_height)*self.MainWindow.height()))
         self.parent.attribute_viewer.setObjectName("attribute_viewer")
@@ -54,19 +65,18 @@ class Layouts:
 
 
         self.parent.batch_viewer = QtWidgets.QFrame(self.parent.centralwidget)
+        self.parent.central_layout.addWidget(self.parent.batch_viewer, 0, 0, 2, 1)
+
         self.parent.batch_viewer.setGeometry(QtCore.QRect(0, 0, batch_viewer_default_width*self.MainWindow.width(), self.MainWindow.height()))
         self.parent.batch_viewer.setObjectName("batch_viewer")
         self.parent.batch_viewer.layout = QtWidgets.QGridLayout(self.parent.batch_viewer)
 
 
-        self.parent.structure_viewer = QtWidgets.QScrollArea(self.parent.centralwidget)
+        self.parent.structure_viewer = QtWidgets.QFrame(self.parent.centralwidget)
+        self.parent.central_layout.addWidget(self.parent.structure_viewer, 0, 1, 1, 1)
         self.parent.structure_viewer.setGeometry(QtCore.QRect(1, 1, 1, 1))
-        self.parent.structure_viewer.setWidgetResizable(True)
         self.parent.structure_viewer.setObjectName("structure_viewer")
-        self.parent.structure_viewer_widget_contents = QtWidgets.QWidget()
-        self.parent.structure_viewer_widget_contents.setGeometry(QtCore.QRect(0, 0, 100, 100))
-        self.parent.structure_viewer_widget_contents.setObjectName("structure_viewer_widget_contents")
-        self.parent.structure_viewer.setWidget(self.parent.structure_viewer_widget_contents)
+        self.parent.structure_viewer.layout = QtWidgets.QGridLayout(self.parent.structure_viewer)
 
         self.parent.devices_viewer = QtWidgets.QScrollArea(self.parent.centralwidget)
         self.parent.devices_viewer.setGeometry(QtCore.QRect(1, 1, 1000, 1000))
@@ -112,37 +122,8 @@ class Layouts:
         mw_height = event.size().height()-42
 
         if self.parent.mode == "Importer":
-            attribute_viewer_x = (1-attributes_default_width)*mw_width
-            attribute_viewer_y = 0
-            attribute_viewer_width = attributes_default_width*mw_width
-            attribute_viewer_height = (attribute_default_height)*mw_height
-            self.parent.attribute_viewer.move(attribute_viewer_x, attribute_viewer_y)
-            self.parent.attribute_viewer.resize(attribute_viewer_width, attribute_viewer_height)
-
-
-            batch_viewer_x = 1
-            batch_viewer_y = 0
-            batch_viewer_width = batch_viewer_default_width*mw_width
-            batch_viewer_height = mw_height
-            self.parent.batch_viewer.resize(batch_viewer_width, batch_viewer_height)
-            self.parent.batch_viewer.move(batch_viewer_x, batch_viewer_y)
-
-            structure_viewer_x = batch_viewer_width
-            structure_viewer_y = 0
-            structure_viewer_width = attribute_viewer_x-batch_viewer_width+batch_viewer_x+1
-            structure_viewer_height = attribute_viewer_height
-            self.parent.structure_viewer.resize(structure_viewer_width, structure_viewer_height)
-            self.parent.structure_viewer_widget_contents.resize(structure_viewer_width, structure_viewer_height)
-            self.parent.structure_viewer.move(structure_viewer_x, structure_viewer_y)
-
-            parameter_viewer_x = (batch_viewer_width)
-            parameter_viewer_y = attribute_default_height*mw_height-1
-            parameter_viewer_width = mw_width - batch_viewer_width
-            parameter_viewer_height = (batch_viewer_y+batch_viewer_height)-parameter_viewer_y
-            self.parent.parameter_viewer.resize(parameter_viewer_width, parameter_viewer_height)
-            self.parent.parameter_viewer_widget_contents.resize(parameter_viewer_width, parameter_viewer_height)
-            self.parent.parameter_viewer.move(parameter_viewer_x, parameter_viewer_y)
-
+            #Everything in here is now managed by a layout, no need to manuslly resize anymore
+            pass
 
         elif self.parent.mode == "Viewer":
             #Windows ---------------------------------------------------------
